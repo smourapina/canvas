@@ -1,13 +1,31 @@
 package canvas
 
+import canvas.domain.Command
+import canvas.io.{InputError, InputReader}
+
 import scala.io.StdIn._
 
 object CanvasApplication extends App {
 
-  Console.print("enter command: ")
+  val promptMessage = "enter command: "
 
-  val command = readLine()
+  val inputReader = new InputReader
+  runApplication()
 
-  Console.println(command)
+
+  def runApplication(): Unit = {
+
+    Console.print(promptMessage)
+
+    val input = readLine()
+    val res: Either[InputError, Command] = inputReader.inputToCommand(input)
+
+    res match {
+      case Right(command) => println(command)
+      case Left(error) => println(error)
+    }
+
+    runApplication()
+  }
 
 }

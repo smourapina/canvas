@@ -9,4 +9,6 @@ case class Rectangle(upperLeftCorner: Point, lowerRightCorner: Point) extends Co
 
 case class BucketFill(area: Point, color: Char) extends Command
 
+case class Quit() extends Command
+
 case class Point(x: Int, y: Int)
