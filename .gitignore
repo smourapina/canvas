@@ -1,0 +1,12 @@
+target
+\#*#
+*~
+.#*
+.lib
+.history
+.idea
+.idea/*
+.idea_modules
+.DS_Store
+.sbtrc
+tests.iml
