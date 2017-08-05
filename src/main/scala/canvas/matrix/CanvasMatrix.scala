@@ -1,36 +1,29 @@
 package canvas.matrix
 
-import canvas.domain.{Canvas, Line}
-
-
-/**
-  * The drawing canvas is internally represented using a two-dimensional Array of characters.
-  */
-
+import canvas.domain._
 
 class CanvasMatrix(dimensions: Canvas, currentCanvas: Array[Array[Char]]) extends CanvasOperationsValidation {
 
   override def toString: String = currentCanvas.map(_.mkString).mkString("\n")
 
-  def drawLine(commandLine: Line): Either[CanvasOperationError, CanvasMatrix] = {
+  def drawLine(lineCommand: Line): Either[CanvasOperationError, CanvasMatrix] = {
 
-    val updatedCanvas = currentCanvas
+    lineCommand match {
 
-    commandLine match {
+      case valid if lineWithinCanvasBounds(dimensions, lineCommand) => valid match {
 
-      case valid if lineWithinCanvasBounds(dimensions, commandLine) => valid match {
-        case _ if lineIsHorizontal(commandLine) =>
+        case _ if lineIsHorizontal(lineCommand) =>
           for (
-            x <- commandLine.origin.x to commandLine.last.x
-          ) updatedCanvas(commandLine.origin.y)(x) = CanvasAscii.shapesBorder
-          Right(new CanvasMatrix(dimensions, updatedCanvas))
+            x <- lineCommand.origin.x to lineCommand.last.x
+          ) currentCanvas(lineCommand.origin.y)(x) = CanvasAscii.shapesBorder
+          Right(this)
 
 
-        case _ if lineIsVertical(commandLine) =>
+        case _ if lineIsVertical(lineCommand) =>
           for (
-            y <- commandLine.origin.y to commandLine.last.y
-          ) updatedCanvas(y)(commandLine.origin.x) = CanvasAscii.shapesBorder
-          Right(new CanvasMatrix(dimensions, updatedCanvas))
+            y <- lineCommand.origin.y to lineCommand.last.y
+          ) currentCanvas(y)(lineCommand.origin.x) = CanvasAscii.shapesBorder
+          Right(this)
 
 
         case _ => Left(InvalidShape())
@@ -41,6 +34,15 @@ class CanvasMatrix(dimensions: Canvas, currentCanvas: Array[Array[Char]]) extend
 
   }
 
+  def drawRectangle(rectangle: Rectangle): Either[CanvasOperationError, CanvasMatrix] = {
+    val upperRight = Point(rectangle.upperLeftCorner.x, rectangle.lowerRightCorner.y)
+    val lowerLeft = Point(rectangle.lowerRightCorner.x, rectangle.upperLeftCorner.y)
+
+    drawLine(Line(rectangle.upperLeftCorner, upperRight))
+    drawLine(Line(lowerLeft, rectangle.lowerRightCorner))
+    drawLine(Line(rectangle.upperLeftCorner, lowerLeft))
+    drawLine(Line(upperRight, rectangle.lowerRightCorner))
+  }
 }
 
 
@@ -48,13 +50,14 @@ object CanvasMatrix extends CanvasOperationsValidation {
 
   def apply(dimensions: Canvas): CanvasMatrix = {
 
-    val beginAndEnd: Array[Char] = Array.fill(dimensions.width + 2)(CanvasAscii.horizontalBorder)
-    val middle: Array[Array[Char]] = Array.fill(dimensions.height)(
-      Array(CanvasAscii.verticalBorder) ++ Array.fill(dimensions.width)(' ') ++ Array(CanvasAscii.verticalBorder)
+    val horizontalBorder: Array[Char] = Array.fill(dimensions.width + 2)(CanvasAscii.horizontalBorder)
+    val middleSection: Array[Array[Char]] = Array.fill(dimensions.height)(
+      Array(CanvasAscii.verticalBorder)
+        ++ Array.fill(dimensions.width)(CanvasAscii.fillingSpace)
+        ++ Array(CanvasAscii.verticalBorder)
     )
 
-    new CanvasMatrix(dimensions, beginAndEnd +: middle :+ beginAndEnd)
-
+    new CanvasMatrix(dimensions, horizontalBorder +: middleSection :+ horizontalBorder)
   }
 }
 

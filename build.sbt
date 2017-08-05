@@ -9,3 +9,5 @@ lazy val root = (project in file(".")).
     name := "canvas",
     libraryDependencies += scalaTest % Test
   )
+
+fork in console := true

@@ -1,5 +1,6 @@
 package canvas
 
+import canvas.actions.CanvasActions
 import canvas.domain.Command
 import canvas.io.{InputError, InputReader}
 
@@ -10,6 +11,8 @@ object CanvasApplication extends App {
   val promptMessage = "enter command: "
 
   val inputReader = new InputReader
+  val actions = new CanvasActions
+
   runApplication()
 
 
@@ -21,7 +24,7 @@ object CanvasApplication extends App {
     val res: Either[InputError, Command] = inputReader.inputToCommand(input)
 
     res match {
-      case Right(command) => println(command)
+      case Right(command) => actions.commandToCanvasAction(command)
       case Left(error) => println(error)
     }
 
