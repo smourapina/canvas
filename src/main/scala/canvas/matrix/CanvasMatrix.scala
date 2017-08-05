@@ -2,11 +2,13 @@ package canvas.matrix
 
 import canvas.domain._
 
-class CanvasMatrix(dimensions: Canvas, currentCanvas: Array[Array[Char]]) extends CanvasOperationsValidation {
+class CanvasMatrix(dimensions: Canvas, currentCanvas: Array[Array[Char]]) extends CanvasOperations {
 
   override def toString: String = currentCanvas.map(_.mkString).mkString("\n")
 
   def drawLine(lineCommand: Line): Either[CanvasOperationError, CanvasMatrix] = {
+
+    val updatedCanvas = currentCanvas
 
     lineCommand match {
 
@@ -15,15 +17,15 @@ class CanvasMatrix(dimensions: Canvas, currentCanvas: Array[Array[Char]]) extend
         case _ if lineIsHorizontal(lineCommand) =>
           for (
             x <- lineCommand.origin.x to lineCommand.last.x
-          ) currentCanvas(lineCommand.origin.y)(x) = CanvasAscii.shapesBorder
-          Right(this)
+          ) updatedCanvas(lineCommand.origin.y)(x) = CanvasAscii.shapesBorder
+          Right(new CanvasMatrix(dimensions, updatedCanvas))
 
 
         case _ if lineIsVertical(lineCommand) =>
           for (
             y <- lineCommand.origin.y to lineCommand.last.y
-          ) currentCanvas(y)(lineCommand.origin.x) = CanvasAscii.shapesBorder
-          Right(this)
+          ) updatedCanvas(y)(lineCommand.origin.x) = CanvasAscii.shapesBorder
+          Right(new CanvasMatrix(dimensions, updatedCanvas))
 
 
         case _ => Left(InvalidShape())
@@ -43,10 +45,31 @@ class CanvasMatrix(dimensions: Canvas, currentCanvas: Array[Array[Char]]) extend
     drawLine(Line(rectangle.upperLeftCorner, lowerLeft))
     drawLine(Line(upperRight, rectangle.lowerRightCorner))
   }
+
+  def bucketFill(fill: BucketFill): Either[CanvasOperationError, CanvasMatrix] = {
+
+    val updatedCanvas = currentCanvas
+
+    def bucketF(x: Int, y: Int): Unit = {
+      //println("Point: " + x.toString + "  " + y.toString)
+      if (pointIsWithinCanvasBounds(dimensions, Point(y, x)) && pointIsBlank(updatedCanvas, Point(x, y))) {
+        updatedCanvas(x)(y) = fill.color
+        bucketF(x + 1, y)
+        bucketF(x - 1, y)
+        bucketF(x, y + 1)
+        bucketF(x, y - 1)
+      }
+    }
+
+    bucketF(fill.area.x, fill.area.y)
+
+    Right(new CanvasMatrix(dimensions, updatedCanvas))
+  }
+
 }
 
 
-object CanvasMatrix extends CanvasOperationsValidation {
+object CanvasMatrix extends CanvasOperations {
 
   def apply(dimensions: Canvas): CanvasMatrix = {
 

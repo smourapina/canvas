@@ -1,6 +1,6 @@
 package canvas.matrix
 
-import canvas.domain.{Canvas, Line, Point, Rectangle}
+import canvas.domain._
 import org.scalatest.{Matchers, WordSpec}
 
 class CanvasMatrixTest extends WordSpec with Matchers {
@@ -9,7 +9,8 @@ class CanvasMatrixTest extends WordSpec with Matchers {
   val horizontalLineCommand = Line(Point(1, 2), Point(6, 2))
   val verticalLineCommand = Line(Point(6, 3), Point(6, 4))
   val rectangleCommand = Rectangle(Point(16, 1), Point(20, 3))
-  
+  val bucketFillCommand = BucketFill(Point(3, 10), 'o')
+
   "CanvasMatrix" when {
 
     "Canvas command is received" should {
@@ -119,6 +120,45 @@ class CanvasMatrixTest extends WordSpec with Matchers {
             "|xxxxxx         x   x|",
             "|     x         xxxxx|",
             "|     x              |",
+            "----------------------"
+          ).mkString("\n")
+
+          assert(canvas.toString == result)
+        }
+      }
+
+      "Bucket fill command is received" should {
+        "fill the specified area in the canvas" in {
+          val canvas: CanvasMatrix = CanvasMatrix(canvasCommand)
+          canvas.bucketFill(bucketFillCommand)
+
+          val result = Array(
+            "----------------------",
+            "|oooooooooooooooooooo|",
+            "|oooooooooooooooooooo|",
+            "|oooooooooooooooooooo|",
+            "|oooooooooooooooooooo|",
+            "----------------------"
+          ).mkString("\n")
+
+          assert(canvas.toString == result)
+        }
+      }
+
+      "Bucket fill command is received after 2 line commands and 1 rectangle commands" should {
+        "fill the specified area in the canvas" in {
+          val canvas: CanvasMatrix = CanvasMatrix(canvasCommand)
+          canvas.drawLine(horizontalLineCommand)
+          canvas.drawLine(verticalLineCommand)
+          canvas.drawRectangle(rectangleCommand)
+          canvas.bucketFill(bucketFillCommand)
+
+          val result = Array(
+            "----------------------",
+            "|oooooooooooooooxxxxx|",
+            "|xxxxxxooooooooox   x|",
+            "|     xoooooooooxxxxx|",
+            "|     xoooooooooooooo|",
             "----------------------"
           ).mkString("\n")
 
