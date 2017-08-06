@@ -28,5 +28,5 @@ trait CanvasValidation {
 
 sealed trait CanvasOperationError
 
-case class OperationNotAllowedError() extends CanvasOperationError
-case class InvalidShape() extends CanvasOperationError
+case class OperationNotAllowedError(message: String) extends CanvasOperationError
+case class InvalidShape(message: String) extends CanvasOperationError

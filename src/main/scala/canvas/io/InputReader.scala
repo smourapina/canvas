@@ -2,9 +2,8 @@ package canvas.io
 
 import canvas.domain._
 
-class InputReader extends InputValidation {
+class InputReader {
 
-  //TODO add verification of argument types to improve input reading
   def inputToCommand(input: String): Either[InputError, Command] = input.replaceAll("\\s{2,}", " ").trim.split(" ") match {
 
     case Array("Q") => Right(Quit())
@@ -12,7 +11,7 @@ class InputReader extends InputValidation {
     case Array("L", x1, y1, x2, y2)  => Right(Line(Point(x1.toInt, y1.toInt), Point(x2.toInt, y2.toInt)))
     case Array("R", x1, y1, x2, y2)  => Right(Rectangle(Point(x1.toInt, y1.toInt), Point(x2.toInt, y2.toInt)))
     case Array("B", x, y, c)  => Right(BucketFill(Point(x.toInt, y.toInt), c.charAt(0)))
-    case _ => Left(IncorrectCommandError("tbd"))
+    case _ => Left(UnknownCommandError("error: the command does not exist"))
 
   }
 

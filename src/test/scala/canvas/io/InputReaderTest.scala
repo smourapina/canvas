@@ -1,11 +1,13 @@
 package canvas.io
 
 import canvas.domain._
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.WordSpec
 
-class InputReaderTest extends WordSpec with Matchers {
+class InputReaderTest extends WordSpec {
 
   val inputReader = new InputReader
+  
+  val unknownCommandError = UnknownCommandError("error: the command does not exist")
 
   "InputReader" when {
 
@@ -36,8 +38,8 @@ class InputReaderTest extends WordSpec with Matchers {
         val invalidCommand = inputReader.inputToCommand("Cx 3 5")
         val invalidNumArgs = inputReader.inputToCommand("C 30")
 
-        assert(invalidCommand == Left(IncorrectCommandError("tbd")))
-        assert(invalidNumArgs == Left(IncorrectCommandError("tbd")))
+        assert(invalidCommand == Left(unknownCommandError))
+        assert(invalidNumArgs == Left(unknownCommandError))
       }
     }
 
@@ -58,8 +60,8 @@ class InputReaderTest extends WordSpec with Matchers {
         val invalidCommand = inputReader.inputToCommand("Lx 3 5 4 5")
         val invalidNumArgs = inputReader.inputToCommand("L 30 20")
 
-        assert(invalidCommand == Left(IncorrectCommandError("tbd")))
-        assert(invalidNumArgs == Left(IncorrectCommandError("tbd")))
+        assert(invalidCommand == Left(unknownCommandError))
+        assert(invalidNumArgs == Left(unknownCommandError))
       }
     }
 
@@ -80,8 +82,8 @@ class InputReaderTest extends WordSpec with Matchers {
         val invalidCommand = inputReader.inputToCommand("Rx 3 5 4 5")
         val invalidNumArgs = inputReader.inputToCommand("R 30 20")
 
-        assert(invalidCommand == Left(IncorrectCommandError("tbd")))
-        assert(invalidNumArgs == Left(IncorrectCommandError("tbd")))
+        assert(invalidCommand == Left(unknownCommandError))
+        assert(invalidNumArgs == Left(unknownCommandError))
       }
     }
 
@@ -102,8 +104,8 @@ class InputReaderTest extends WordSpec with Matchers {
         val invalidCommand = inputReader.inputToCommand("Bx 3 5 4 5")
         val invalidNumArgs = inputReader.inputToCommand("B 30 20")
 
-        assert(invalidCommand == Left(IncorrectCommandError("tbd")))
-        assert(invalidNumArgs == Left(IncorrectCommandError("tbd")))
+        assert(invalidCommand == Left(unknownCommandError))
+        assert(invalidNumArgs == Left(unknownCommandError))
       }
     }
 
@@ -111,7 +113,7 @@ class InputReaderTest extends WordSpec with Matchers {
       "result in an IncorrectCommandError" in {
         val command = inputReader.inputToCommand("X 1")
 
-        assert(command == Left(IncorrectCommandError("tbd")))
+        assert(command == Left(unknownCommandError))
       }
     }
 

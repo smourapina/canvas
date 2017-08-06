@@ -25,10 +25,10 @@ trait CanvasOperations extends CanvasValidation {
           ) updatedCanvas(y)(lineCommand.origin.x) = CanvasAscii.shapesBorder
           Right(new CanvasMatrix(canvas.dimensions, updatedCanvas))
 
-        case _ => Left(InvalidShape())
+        case _ => Left(InvalidShape("error: invalid shape"))
       }
 
-      case _ => Left(OperationNotAllowedError())
+      case _ => Left(OperationNotAllowedError("error: operation not allowed"))
     }
 
   }
@@ -48,7 +48,6 @@ trait CanvasOperations extends CanvasValidation {
     val updatedCanvas = canvas.currentCanvas
 
     def bucketF(x: Int, y: Int): Unit = {
-      //println("Point: " + x.toString + "  " + y.toString)
       if (pointIsWithinCanvasBounds(canvas.dimensions, Point(y, x)) && pointIsBlank(updatedCanvas, Point(x, y))) {
         updatedCanvas(x)(y) = fill.color
         bucketF(x + 1, y)
@@ -58,7 +57,7 @@ trait CanvasOperations extends CanvasValidation {
       }
     }
 
-    bucketF(fill.area.x, fill.area.y)
+    bucketF(fill.area.y, fill.area.x)
 
     Right(new CanvasMatrix(canvas.dimensions, updatedCanvas))
   }

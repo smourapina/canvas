@@ -1,5 +1,7 @@
 package canvas.actions
 
-class CanvasActionsTest {
+import org.scalatest.WordSpec
+
+class CanvasActionsTest extends WordSpec {
 
 }
