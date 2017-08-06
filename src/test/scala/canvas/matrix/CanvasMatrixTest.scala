@@ -3,7 +3,7 @@ package canvas.matrix
 import canvas.domain._
 import org.scalatest.{Matchers, WordSpec}
 
-class CanvasMatrixTest extends WordSpec with Matchers {
+class CanvasMatrixTest extends WordSpec with Matchers with CanvasOperations {
 
   val canvasCommand = Canvas(20, 4)
   val horizontalLineCommand = Line(Point(1, 2), Point(6, 2))
@@ -33,7 +33,7 @@ class CanvasMatrixTest extends WordSpec with Matchers {
         "draw a line on the canvas" in {
           val canvas: CanvasMatrix = CanvasMatrix(canvasCommand)
           val line = horizontalLineCommand
-          canvas.drawLine(line)
+          drawLine(canvas, line)
           
           val expected = Array(
             "----------------------",
@@ -52,7 +52,7 @@ class CanvasMatrixTest extends WordSpec with Matchers {
         "draw a line on the canvas" in {
           val canvas: CanvasMatrix = CanvasMatrix(canvasCommand)
           val line = verticalLineCommand
-          canvas.drawLine(line)
+          drawLine(canvas, line)
 
           val expected = Array(
             "----------------------",
@@ -71,8 +71,8 @@ class CanvasMatrixTest extends WordSpec with Matchers {
       "Line commands are received in sequence" should {
         "draw the 2 lines on the canvas" in {
           val canvas: CanvasMatrix = CanvasMatrix(canvasCommand)
-          canvas.drawLine(horizontalLineCommand)
-          canvas.drawLine(verticalLineCommand)
+          drawLine(canvas, horizontalLineCommand)
+          drawLine(canvas, verticalLineCommand)
           
           val expected = Array(
             "----------------------",
@@ -91,7 +91,7 @@ class CanvasMatrixTest extends WordSpec with Matchers {
       "Rectangle command is received" should {
         "draw the rectangle on the canvas" in {
           val canvas: CanvasMatrix = CanvasMatrix(canvasCommand)
-          canvas.drawRectangle(rectangleCommand)
+          drawRectangle(canvas, rectangleCommand)
           
           val expected = Array(
             "----------------------",
@@ -110,9 +110,9 @@ class CanvasMatrixTest extends WordSpec with Matchers {
       "Rectangle command is received after 2 line commands" should {
         "draw the shapes on the canvas" in {
           val canvas: CanvasMatrix = CanvasMatrix(canvasCommand)
-          canvas.drawLine(horizontalLineCommand)
-          canvas.drawLine(verticalLineCommand)
-          canvas.drawRectangle(rectangleCommand)
+          drawLine(canvas, horizontalLineCommand)
+          drawLine(canvas, verticalLineCommand)
+          drawRectangle(canvas, rectangleCommand)
 
           val result = Array(
             "----------------------",
@@ -130,7 +130,7 @@ class CanvasMatrixTest extends WordSpec with Matchers {
       "Bucket fill command is received" should {
         "fill the specified area in the canvas" in {
           val canvas: CanvasMatrix = CanvasMatrix(canvasCommand)
-          canvas.bucketFill(bucketFillCommand)
+          bucketFill(canvas, bucketFillCommand)
 
           val result = Array(
             "----------------------",
@@ -148,10 +148,10 @@ class CanvasMatrixTest extends WordSpec with Matchers {
       "Bucket fill command is received after 2 line commands and 1 rectangle commands" should {
         "fill the specified area in the canvas" in {
           val canvas: CanvasMatrix = CanvasMatrix(canvasCommand)
-          canvas.drawLine(horizontalLineCommand)
-          canvas.drawLine(verticalLineCommand)
-          canvas.drawRectangle(rectangleCommand)
-          canvas.bucketFill(bucketFillCommand)
+          drawLine(canvas, horizontalLineCommand)
+          drawLine(canvas, verticalLineCommand)
+          drawRectangle(canvas, rectangleCommand)
+          bucketFill(canvas, bucketFillCommand)
 
           val result = Array(
             "----------------------",

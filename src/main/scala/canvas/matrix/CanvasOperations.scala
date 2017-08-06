@@ -1,33 +1,66 @@
 package canvas.matrix
 
-import canvas.domain.{Canvas, Line, Point}
+import canvas.domain.{BucketFill, Line, Point, Rectangle}
 
-trait CanvasOperations {
+trait CanvasOperations extends CanvasValidation {
 
-  def pointIsWithinCanvasBounds(dimensions: Canvas, point: Point): Boolean = {
-    point.x <= dimensions.width && point.y <= dimensions.height &&
-      point.x >= 1 && point.y >= 1
+  def drawLine(canvas: CanvasMatrix, lineCommand: Line): Either[CanvasOperationError, CanvasMatrix] = {
+
+    val updatedCanvas = canvas.currentCanvas
+
+    lineCommand match {
+
+      case valid if lineWithinCanvasBounds(canvas.dimensions, lineCommand) => valid match {
+
+        case _ if lineIsHorizontal(lineCommand) =>
+          for (
+            x <- lineCommand.origin.x to lineCommand.last.x
+          ) updatedCanvas(lineCommand.origin.y)(x) = CanvasAscii.shapesBorder
+          Right(new CanvasMatrix(canvas.dimensions, updatedCanvas))
+
+
+        case _ if lineIsVertical(lineCommand) =>
+          for (
+            y <- lineCommand.origin.y to lineCommand.last.y
+          ) updatedCanvas(y)(lineCommand.origin.x) = CanvasAscii.shapesBorder
+          Right(new CanvasMatrix(canvas.dimensions, updatedCanvas))
+
+        case _ => Left(InvalidShape())
+      }
+
+      case _ => Left(OperationNotAllowedError())
+    }
+
   }
 
-  def pointIsBlank(canvas: Array[Array[Char]], point: Point): Boolean = {
-    canvas(point.x)(point.y) == CanvasAscii.fillingSpace
+  def drawRectangle(canvas: CanvasMatrix, rectangle: Rectangle): Either[CanvasOperationError, CanvasMatrix] = {
+    val upperRight = Point(rectangle.upperLeftCorner.x, rectangle.lowerRightCorner.y)
+    val lowerLeft = Point(rectangle.lowerRightCorner.x, rectangle.upperLeftCorner.y)
+
+    drawLine(canvas, Line(rectangle.upperLeftCorner, upperRight))
+    drawLine(canvas, Line(lowerLeft, rectangle.lowerRightCorner))
+    drawLine(canvas, Line(rectangle.upperLeftCorner, lowerLeft))
+    drawLine(canvas, Line(upperRight, rectangle.lowerRightCorner))
   }
 
-  def lineWithinCanvasBounds(dimensions: Canvas, line: Line): Boolean = {
-    pointIsWithinCanvasBounds(dimensions, line.origin) && pointIsWithinCanvasBounds(dimensions, line.last)
-  }
+  def bucketFill(canvas: CanvasMatrix, fill: BucketFill): Either[CanvasOperationError, CanvasMatrix] = {
 
-  def lineIsHorizontal(commandLine: Line): Boolean = {
-    commandLine.origin.y == commandLine.last.y
-  }
+    val updatedCanvas = canvas.currentCanvas
 
-  def lineIsVertical(commandLine: Line): Boolean = {
-    commandLine.origin.x == commandLine.last.x
+    def bucketF(x: Int, y: Int): Unit = {
+      //println("Point: " + x.toString + "  " + y.toString)
+      if (pointIsWithinCanvasBounds(canvas.dimensions, Point(y, x)) && pointIsBlank(updatedCanvas, Point(x, y))) {
+        updatedCanvas(x)(y) = fill.color
+        bucketF(x + 1, y)
+        bucketF(x - 1, y)
+        bucketF(x, y + 1)
+        bucketF(x, y - 1)
+      }
+    }
+
+    bucketF(fill.area.x, fill.area.y)
+
+    Right(new CanvasMatrix(canvas.dimensions, updatedCanvas))
   }
 
 }
-
-sealed trait CanvasOperationError
-
-case class OperationNotAllowedError() extends CanvasOperationError
-case class InvalidShape() extends CanvasOperationError

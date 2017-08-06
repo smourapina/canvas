@@ -1,16 +1,9 @@
 package canvas.actions
 
-import canvas.domain.{Command, Quit}
+import canvas.matrix.CanvasOperations
 
-class CanvasActions {
-
-  def commandToCanvasAction(command: Command): Unit = command match {
-    case _: Quit => System.exit(0)
-    //case c: Canvas => new CanvasMatrix(c)
-  }
+object CanvasActions extends CanvasOperations {
 
 }
 
-object CanvasS {
 
-}
