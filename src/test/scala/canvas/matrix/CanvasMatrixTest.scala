@@ -1,22 +1,16 @@
 package canvas.matrix
 
-import canvas.domain._
-import org.scalatest.{Matchers, WordSpec}
+import canvas.util.DomainFixture
+import org.scalatest.WordSpec
 
-class CanvasMatrixTest extends WordSpec with Matchers with CanvasOperations {
-
-  val canvasCommand = Canvas(20, 4)
-  val horizontalLineCommand = Line(Point(1, 2), Point(6, 2))
-  val verticalLineCommand = Line(Point(6, 3), Point(6, 4))
-  val rectangleCommand = Rectangle(Point(16, 1), Point(20, 3))
-  val bucketFillCommand = BucketFill(Point(10, 3), 'o')
+class CanvasMatrixTest extends WordSpec with CanvasOperations with DomainFixture {
 
   "CanvasMatrix" when {
 
     "Canvas command is received" should {
       "create a canvas matrix representation" in {
         val canvas: CanvasMatrix = CanvasMatrix(canvasCommand)
-        
+
         val expected: String = Array(
           "----------------------",
           "|                    |",
@@ -28,6 +22,7 @@ class CanvasMatrixTest extends WordSpec with Matchers with CanvasOperations {
 
         assert(canvas.toString == expected)
       }
+    }
 
       "Line command is received for a horizontal line" should {
         "draw a line on the canvas" in {
@@ -167,6 +162,5 @@ class CanvasMatrixTest extends WordSpec with Matchers with CanvasOperations {
       }
 
     }
-  }
 
 }
