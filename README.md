@@ -1,87 +1,77 @@
-# Springer Nature Code Challenge
+# Canvas Application Documentation
 
-Below is a coding challenge that we would like you to solve. Please read through the description carefully and implement a solution for it. We don't want you to over-engineer the solution but be prepared to extend the functionality in the next step of the interview process. Finally, we ask you to submit a solution that you'd be happy to go live with and works "out of the box”.
+This is a simple console version of a drawing program that works as follows:
 
-Please complete the challenge in your preferred language.
+1. creates a new canvas;
+2. starts drawing on the canvas by issuing various commands;
+3. quits.
 
-Please create a new git branch and then commit to this as you work. When you have finished please create a pull request to master. We will then review it within 7 days. Please do not make your solution public. 
+The program supports the following commands:
+- `C w h`: creates a new canvas of width w and height h. 
+- `L x1 y1 x2 y2`: creates a new line from `(x1,y1)` to `(x2,y2)`. Currently only horizontal or vertical lines are supported. Horizontal and vertical lines will be drawn using the `x` character. 
+- `R x1 y1 x2 y2`: creates a new rectangle, whose upper left corner is `(x1,y1)` and lower right corner is `(x2,y2)`. Horizontal and vertical lines will be drawn using the `x` character. 
+- `B x y c`: fills the entire area connected to `(x,y)` with colour `'c'`. The behaviour of this is the same as that of the "bucket fill" tool in paint programs. 
+- `Q`: quits the program. 
 
-**Good Luck!**
+
+## How to run
+Navigate to the project directory and type:
+```
+sbt run
+```
+
+After you see the prompt, you can start typing commands.
+```
+enter command:
+```
+
+For each command typed, you will see immediately displayed an output which is the result of the command. For example,
+you can have the following sequence of commands:
+
+```
+enter command: C 20 4
+----------------------
+|                    |
+|                    |
+|                    |
+|                    |
+----------------------
+enter command: L 2 3 6 3
+----------------------
+|                    |
+|                    |
+| xxxxx              |
+|                    |
+----------------------
+enter command: R 7 1 12 4
+----------------------
+|      xxxxxx        |
+|      x    x        |
+| xxxxxx    x        |
+|      xxxxxx        |
+----------------------
+enter command: B 2 9 o
+----------------------
+|      xxxxxx        |
+|      xoooox        |
+| xxxxxxoooox        |
+|      xxxxxx        |
+----------------------
+enter command: Q
+
+```
+
+## Notes
+
+#### Some considerations on design
+-  The drawing canvas is internally represented using a two-dimensional indexed sequence of characters. When it came to make the choice between an immutable data structure (`Vector`) or a mutable one (`Array`), the choice was made to go for an `Array`, as these show better performance. 
 
 
-## Things We Value
+#### Aspects that could be improved
+- Validation of input should check if the value types are correct for each input command. For example, the case in which the user could input something like `L x1 2 3 4` is not covered by the checks, as the value `x1` fails when trying to convert it to an `Int`.
+- For keeping the canvas state, the `State` monad (for example, as implemented by `cats`) could be used instead.
+- The algorithm for `BucketFill` is not optimal and could be cause for `StackOverflow`. It could be replaced for something like the `QuickFill` algorithm described here: https://www.codeproject.com/Articles/6017/QuickFill-An-efficient-flood-fill-algorithm
+- Error handling is currently not done in a consistent way throughout the application, and this could be improved. Tests should be added for handling error and to cover edge cases more extensively.
 
-* Working software!
-* Tests.
-* A working build.
-* Small checkins with good comments.
-* A simple readme with build and run instructions, and maybe talk about trade offs and design decisions you made.
-* Simple code (but not necessarily easy!)
-* The fewer libraries the better - we want to see your code. If you do use a library then explain why in the readme.
-* We like functional constructs but also value good domain names and modelling.
-* Evidence you have thought about edge cases and errors (either in code or the readme).
 
-## Enough talk, the Problem
-
-You're given the task of writing a simple console version of a drawing program. The functionality of the program is quite limited but should be extensible. The program should work as follows:
-
-1. create a new canvas.
-2. start drawing on the canvas by issuing various commands.
-3. quit.
-
-The program should support the following commands:
-   
-| Command | Description |
-| ------- | ----------- |
-| `C w h`     | Should create a new canvas of width w and height h. |
-| `L x1 y1 x2 y2` | Should create a new line from `(x1,y1)` to `(x2,y2)`. Currently only horizontal or vertical lines are supported. Horizontal and vertical lines will be drawn using the `x` character. |
-| `R x1 y1 x2 y2` | Should create a new rectangle, whose upper left corner is `(x1,y1)` and lower right corner is `(x2,y2)`. Horizontal and vertical lines will be drawn using the `x` character. |
-| `B x y c` | Should fill the entire area connected to `(x,y)` with colour `'c'`. The behaviour of this is the same as that of the "bucket fill" tool in paint programs. |
-| `Q` | Should quit the program. |
  
-## Sample I/O
-
-Below is a sample of the output your program should produce. User input is prefixed with `enter command:`.
-
-
-	enter command: C 20 4
-	----------------------
-	|                    |
-	|                    |
-	|                    |
-	|                    |
-	----------------------
-	
-	enter command: L 1 2 6 2
-	----------------------
-	|                    |
-	|xxxxxx              |
-	|                    |
-	|                    |
-	----------------------
-	
-	enter command: L 6 3 6 4
-	----------------------
-	|                    |
-	|xxxxxx              |
-	|     x              |
-	|     x              |
-	----------------------
-	
-	enter command: R 16 1 20 3
-	----------------------
-	|               xxxxx|
-	|xxxxxx         x   x|
-	|     x         xxxxx|
-	|     x              |
-	----------------------
-	
-	enter command: B 10 3 o
-	----------------------
-	|oooooooooooooooxxxxx|
-	|xxxxxxooooooooox   x|
-	|     xoooooooooxxxxx|
-	|     xoooooooooooooo|
-	----------------------
-	
-	enter command: Q
