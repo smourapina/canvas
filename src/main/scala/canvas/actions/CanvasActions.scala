@@ -3,7 +3,7 @@ package canvas.actions
 import canvas.actions.CanvasState.{canvasAlreadyExists, nextState}
 import canvas.domain._
 import canvas.matrix
-import canvas.matrix.CanvasMatrix
+import canvas.matrix.{CanvasMatrix, CanvasOperationError}
 
 trait CanvasActions extends matrix.CanvasOperations {
 
@@ -26,7 +26,7 @@ trait CanvasActions extends matrix.CanvasOperations {
       nextState(state, canvas)
 
     case b @ BucketFill(_, _) =>
-      val canvas = bucketFill(state.currentCanvas, b)
+      val canvas: Either[CanvasOperationError, CanvasMatrix] = bucketFill(state.currentCanvas, b)
       nextState(state, canvas)
 
     case _ =>
